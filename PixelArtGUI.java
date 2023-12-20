@@ -1,117 +1,194 @@
 import java.awt.Color;
 import java.awt.Desktop;
 import java.awt.Dimension;
-import java.awt.Graphics2D;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.swing.JFrame;
-import javax.imageio.ImageIO;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JColorChooser;
+import javax.swing.JComboBox;
 
 public class PixelArtGUI extends JFrame {
 	private static final long serialVersionUID = 1L;
-	JButton button = new JButton("Generate Image");
+
+	private final Integer[] choices = { 1, 2, 3, 4 };
+
+	private final JButton generateButton = new JButton("Generate Image");
+	private final JButton openFolderButton = new JButton("Open Folder");
+	private final JButton exitButton = new JButton("Exit");
+	private final JButton selectNewColourButton = new JButton("Select New Colour");
+	private final JComboBox<Integer> layerColour = new JComboBox<>(choices);
+	private final JFrame colourPicker = new JFrame();
+	private final JLabel layerColourTitle = new JLabel("Change Layer Colour");
+	private final JPanel buttonPanel = new JPanel();
+	private final JPanel colourPanel = new JPanel();
+	private final JPanel pickedColour = new JPanel();
+	private final JPanel currentGradient = new JPanel();
+	private final ArrayList<JPanel> gradiantColours = new ArrayList<JPanel>();
+
+	Dimension size;
+
 	Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-	String fileName = "default";
-	static final Color a = new Color(139, 0, 1);
-	static final Color b = new Color(158, 23, 17);
-	static final Color c = new Color(177, 46, 33);
-	static final Color d = new Color(195, 70, 50);
-//	static final Color a = new Color(120, 92, 50);
-//	static final Color b = new Color(161, 119, 47);
-//	static final Color c = new Color(193, 146, 39);
-//	static final Color d = new Color(205, 170, 94);
-	static final int w = 2360;
-	static final int h = 1640;
-
-	static final int ratio = 4;
-	static final int maxDither = 2;
-	static final int secondaryDither = 8;
-	static final int tertiaryDither = 8;
-	static final int quaternaryDither = 8;
-
-	static final int totalDitherLength = maxDither + secondaryDither + tertiaryDither;
-	static final int convw = w / ratio;
-	static final int convh = h / ratio;
-	static final int type = BufferedImage.TYPE_INT_ARGB;
-
-	Color setColor(int x, int y, int height, int start, Color a, Color b, Color c) {
-		if (y - maxDither < start && ((x % 2 == 1 && y % 2 == 0) || (x % 2 == 0 && y % 2 == 1))) {
-			return b;
-		} else if (y - maxDither - secondaryDither < start && y - maxDither >= start
-				&& ((x % 4 == 2 && y % 4 == 3) || (x % 4 == 0 && y % 4 == 1) || (x % 2 == 1 && y % 2 == 0))) {
-			return b;
-		} else if (y - maxDither - secondaryDither - tertiaryDither < start && y - maxDither - secondaryDither >= start
-				&& (x % 2 == 1 && y % 2 == 0)) {
-			return b;
-		} else if (y - maxDither - secondaryDither - tertiaryDither - quaternaryDither >= height
-				&& y - maxDither - secondaryDither - tertiaryDither < height
-				&& ((x % 2 == 1 && x % 4 != 0 && y % 4 == 1) || (x % 2 == 1 && x % 4 != 3 && y % 4 == 3))) {
-			return c;
-		} else if (y + maxDither + secondaryDither + tertiaryDither + quaternaryDither >= height
-				&& y + maxDither + secondaryDither + tertiaryDither < height
-				&& ((x % 2 == 1 && x % 4 != 0 && y % 4 == 0) || (x % 2 == 1 && x % 4 != 3 && y % 4 == 2))) {
-			return c;
-		} else if (y + maxDither + secondaryDither + tertiaryDither >= height
-				&& y + maxDither + secondaryDither < height && (x % 2 == 1 && y % 2 == 0)) {
-			return c;
-		} else if (y + maxDither + secondaryDither >= height && y + maxDither < height
-				&& ((x % 4 == 2 && y % 4 == 0) || (x % 4 == 0 && y % 4 == 2) || (x % 2 == 1 && y % 2 == 1))) {
-			return c;
-
-		} else if (y + maxDither >= height && ((x % 2 == 1 && y % 2 == 1) || (x % 2 == 0 && y % 2 == 0))) {
-			return c;
-		}
-		return a;
-	}
+	Rectangle r;
+	int height;
+	int width;
+	PixelArtGenerator p;
+	private final double ratio = (double) screenSize.width / screenSize.height;
 
 	PixelArtGUI() {
+		for (int i = 0; i < 4; i++) {
+			gradiantColours.add(new JPanel());
+		}
 		setSize(screenSize.width / 2, screenSize.height / 2);
+		size = getBounds().getSize();
+		setLayout(null);
+		setLocationRelativeTo(null);
+		p = PixelArtGenerator.getInstance();
+		buttonActions();
 		setVisible(true);
-		buttons();
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-	}
-
-	private void buttons() {
-		button.setBounds(50, 100, screenSize.width/5, screenSize.height/10);
-		button.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				BufferedImage image = new BufferedImage(w, h, type);
-				File f = new File(fileName + ".png");
-
-				Graphics2D g2d = image.createGraphics();
-
-				for (int x = 0; x < convw; x++) {
-					for (int y = 0; y < convh; y++) {
-						if (y < convh / 4) {
-							g2d.setColor(setColor(x, y, convh / 4, 0, a, a, b));
-						} else if (y < convh / 2) {
-							g2d.setColor(setColor(x, y, convh / 2, convh / 4, b, a, c));
-						} else if (y < convh / 4 * 3) {
-							g2d.setColor(setColor(x, y, convh / 4 * 3, convh / 2, c, b, d));
-						} else if (y >= convh / 4 * 3) {
-							g2d.setColor(setColor(x, y, convh, convh / 4 * 3, d, c, d));
-						}
-						g2d.fillRect(x * ratio, y * ratio, ratio, ratio);
-
-					}
+		addComponentListener(new ComponentAdapter() {
+			public void componentResized(ComponentEvent e) {
+				// Ensures that the minimum size is possible
+				if (getBounds().getSize().height <= screenSize.height / 2) {
+					setSize(getWidth(), screenSize.height / 2);
+				}
+				if (getBounds().getSize().width <= screenSize.width / 2) {
+					setSize(screenSize.width / 2, getHeight());
 				}
 
+				// Uniform scaling!!!!!!
+				if (getBounds().getSize().width >= screenSize.width / 2) {
+					setSize(getWidth(), (int) (getBounds().getSize().width / ratio));
+				} else if (getBounds().getSize().height >= screenSize.height / 2) {
+					setSize((int) (ratio * getBounds().getSize().height), getHeight());
+				}
+				size = getBounds().getSize();
+
+				repaint();
+			}
+		});
+		repaint();
+	}
+
+	private void buttonActions() {
+		// TODO Auto-generated method stub
+		generateButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				p.generate();
+			}
+		});
+
+		openFolderButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Desktop desktop = Desktop.getDesktop();
+				File dirToOpen = null;
 				try {
-					ImageIO.write(image, "png", f);
-					Desktop.getDesktop().open(f);
-				} catch (IOException ee) {
-					// TODO Auto-generated catch block
-					ee.printStackTrace();
+					dirToOpen = new File("./Photos");
+					desktop.open(dirToOpen);
+				} catch (IllegalArgumentException iae) {
+					System.out.println("File Not Found");
+				} catch (IOException e1) {
+					e1.printStackTrace();
 				}
 			}
 		});
-		add(button);
+
+		exitButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				System.exit(0);
+			}
+		});
+
+		selectNewColourButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Color newColor = JColorChooser.showDialog(colourPicker, getTitle(),
+						p.returnColour((int) (layerColour.getSelectedItem()) - 1));
+				if (newColor != null)
+					p.changeColour(newColor, (int) (layerColour.getSelectedItem()) - 1);
+				repaint();
+			}
+		});
+
+		layerColour.addItemListener(new ItemListener() {
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				repaint();
+			}
+		});
+	}
+
+	/**
+	 * Painting function Graphics g
+	 */
+	public void paint(Graphics g) {
+		super.paint(g);
+		buttonPanel.setBounds(size.width / 10, size.height / 10, size.width / 5, size.height / 2);
+		buttonPanel.setBorder(BorderFactory.createLineBorder(Color.black));
+		buttonPanel.setLayout(null);
+		generateButton.setBounds(0, 0, buttonPanel.getWidth(), buttonPanel.getHeight() / 8);
+		openFolderButton.setBounds(0, buttonPanel.getHeight() / 8, buttonPanel.getWidth(), buttonPanel.getHeight() / 8);
+		exitButton.setBounds(0, buttonPanel.getHeight() / 4, buttonPanel.getWidth(), buttonPanel.getHeight() / 8);
+
+		colourPanel.setBounds(size.width / 5 * 3, size.height / 10, size.width / 4, size.height / 2);
+		colourPanel.setBorder(BorderFactory.createLineBorder(Color.black));
+		colourPanel.setLayout(null);
+
+		layerColourTitle.setBounds(0, 0, colourPanel.getWidth(), colourPanel.getHeight() / 8);
+		layerColourTitle.setFont(new Font("Calibri", Font.PLAIN, colourPanel.getHeight() / 16));
+		layerColourTitle.setHorizontalAlignment(SwingConstants.CENTER);
+		layerColourTitle.setVerticalAlignment(SwingConstants.CENTER);
+
+		layerColour.setBounds(0, colourPanel.getHeight() / 4, colourPanel.getWidth(), colourPanel.getHeight() / 8);
+		layerColour.doLayout();
+		layerColour.setVisible(true);
+		selectNewColourButton.setBounds(0, colourPanel.getHeight() / 8 * 7, colourPanel.getWidth(),
+				colourPanel.getHeight() / 8);
+
+		pickedColour.setBounds(colourPanel.getWidth() / 4, colourPanel.getHeight() / 16 * 7, colourPanel.getWidth() / 2,
+				colourPanel.getWidth() / 2);
+		pickedColour.setBackground(p.returnColour((int) (layerColour.getSelectedItem()) - 1));
+
+		currentGradient.setBounds(size.width / 16 * 15, size.height / 10, size.width / 16, size.height / 2);
+		currentGradient.setBorder(BorderFactory.createLineBorder(Color.black));
+		currentGradient.setLayout(null);
+
+		for (int i = 0; i < 4; i++) {
+			gradiantColours.get(i).setBounds(0, (2 * i + 1) * currentGradient.getHeight() / 8,
+					currentGradient.getHeight() / 8, currentGradient.getHeight() / 8);
+			gradiantColours.get(i).setBackground(p.returnColour(i));
+			currentGradient.add(gradiantColours.get(i));
+		}
+
+		colourPanel.add(layerColourTitle);
+		colourPanel.add(selectNewColourButton);
+		colourPanel.add(layerColour);
+		colourPanel.add(pickedColour);
+		add(colourPanel);
+
+		buttonPanel.add(openFolderButton);
+		buttonPanel.add(generateButton);
+		buttonPanel.add(exitButton);
+		add(buttonPanel);
+
+		add(currentGradient);
 	}
 
 }
