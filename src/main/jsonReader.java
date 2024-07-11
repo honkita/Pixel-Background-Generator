@@ -3,12 +3,14 @@ package main;
 
 import java.awt.Color;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Set;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 @SuppressWarnings("unchecked")
 public class jsonReader {
@@ -31,9 +33,8 @@ public class jsonReader {
 				colours.put(s, col);
 
 			}
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (IOException | ParseException e) {
+
 		}
 
 		//System.out.println(colours.keySet());

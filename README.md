@@ -2,7 +2,7 @@
 
 # Pixel-Background-Generator
 
-![](https://raw.githubusercontent.com/honkita/MD-Links/main/Pixel_On_Hold.svg)
+![](https://raw.githubusercontent.com/honkita/MD-Links/main/Pixel_Maintained.svg)
 
 ## About
 
@@ -12,7 +12,7 @@ This is an ongoing work in progress application that can generate dithered pixel
 
 ## What additional features can you expect from this in the foreseeable future?
 
-I am planning on adding the presets I have for my website along with size of canvas along with grid scale (1 pixel on the grid can be represented with a 2px x 2px square, etc.).
+The last feature being added is the name changing functionality.
 
 ## How many colours does this support and what customizations can be done??
 

@@ -22,12 +22,7 @@ public class PixelArtGenerator {
 
 	ArrayList<Color> colors = new ArrayList<Color>();
 
-//	private Color a = new Color(120, 92, 50);
-//	private Color b = new Color(161, 119, 47);
-//	private Color c = new Color(193, 146, 39);
-//	private Color d = new Color(205, 170, 94);
-
-	private int ratio = 1;
+	private int ratio = 1; // side length of a single "pixel" for image
 	private int maxDither = 10;
 	private int secondaryDither = 8;
 	private int tertiaryDither = 8;
@@ -35,7 +30,7 @@ public class PixelArtGenerator {
 
 	private int totalDitherLength = maxDither + secondaryDither + tertiaryDither;
 
-	private int type = BufferedImage.TYPE_INT_ARGB;
+	private final int type = BufferedImage.TYPE_INT_ARGB;
 
 	protected static PixelArtGenerator getInstance() {
 		if (INSTANCE == null) {
@@ -63,14 +58,14 @@ public class PixelArtGenerator {
 
 		for (int x = 0; x < convw; x++) {
 			for (int y = 0; y < convh; y++) {
-				double bb = (double)(convh) / colors.size();
+				double bb = (double) (convh) / colors.size();
 				double pp = y / bb;
-//				System.out.println("c" + Math.ceil(pp));
-//				System.out.println("f" + Math.floor(pp));
-//				System.out.println("o" + Math.round(pp));
-				//System.out.println((int)pp);
-				//System.out.println(Math.round(pp));
-				int coordinate = (int)((y / bb));
+				// System.out.println("c" + Math.ceil(pp));
+				// System.out.println("f" + Math.floor(pp));
+				// System.out.println("o" + Math.round(pp));
+				// System.out.println((int)pp);
+				// System.out.println(Math.round(pp));
+				int coordinate = (int) ((y / bb));
 				int a = coordinate < numberOfColors() ? coordinate
 						: numberOfColors() - 1;
 				int b = coordinate - 1 < 0 ? 0 : coordinate - 1;
@@ -102,16 +97,18 @@ public class PixelArtGenerator {
 		} else if (y - maxDither - secondaryDither - tertiaryDither < start && y - maxDither - secondaryDither >= start
 				&& (x % 2 == 1 && y % 2 == 0)) {
 			return b;
-		} 
-//		else if (y - totalDitherLength >= height
-//				&& y - maxDither - secondaryDither - tertiaryDither < height
-//				&& ((x % 2 == 1 && x % 4 != 0 && y % 4 == 1) || (x % 2 == 1 && x % 4 != 3 && y % 4 == 3))) {
-//			return b;
-//		} else if (y + totalDitherLength >= height
-//				&& y + maxDither + secondaryDither + tertiaryDither < height
-//				&& ((x % 2 == 1 && x % 4 != 0 && y % 4 == 1) || (x % 2 == 1 && x % 4 != 3 && y % 4 == 3))) {
-//			return c;
-//		} 
+		}
+		// else if (y - totalDitherLength >= height
+		// && y - maxDither - secondaryDither - tertiaryDither < height
+		// && ((x % 2 == 1 && x % 4 != 0 && y % 4 == 1) || (x % 2 == 1 && x % 4 != 3 &&
+		// y % 4 == 3))) {
+		// return b;
+		// } else if (y + totalDitherLength >= height
+		// && y + maxDither + secondaryDither + tertiaryDither < height
+		// && ((x % 2 == 1 && x % 4 != 0 && y % 4 == 1) || (x % 2 == 1 && x % 4 != 3 &&
+		// y % 4 == 3))) {
+		// return c;
+		// }
 		else if (y + maxDither + secondaryDither + tertiaryDither >= height
 				&& y + maxDither + secondaryDither < height && (x % 2 == 1 && y % 2 == 1)) {
 			return c;
@@ -139,7 +136,7 @@ public class PixelArtGenerator {
 	protected void setHeight(int height) {
 		this.height = height;
 	}
-	
+
 	protected int getHeight() {
 		return height;
 	}
@@ -169,23 +166,23 @@ public class PixelArtGenerator {
 
 	protected void resizeDither(String level, int value) {
 		switch (level) {
-		case "Primary":
-			maxDither = value;
-			break;
-		case "Secondary":
-			secondaryDither = value;
-			break;
-		case "Tertiary":
-			tertiaryDither = value;
-			break;
-		case "Quaternary":
-			quaternaryDither = value;
-			break;
+			case "Primary":
+				maxDither = value;
+				break;
+			case "Secondary":
+				secondaryDither = value;
+				break;
+			case "Tertiary":
+				tertiaryDither = value;
+				break;
+			case "Quaternary":
+				quaternaryDither = value;
+				break;
 		}
 		totalDitherLength = maxDither + secondaryDither + tertiaryDither + quaternaryDither;
-		//System.out.println("Total: " + totalDitherLength);
+		// System.out.println("Total: " + totalDitherLength);
 	}
-	
+
 	/**
 	 * 
 	 * @param level
@@ -193,23 +190,29 @@ public class PixelArtGenerator {
 	 */
 	protected int returnDitherLength(String level) {
 		switch (level) {
-		case "Primary":
-			return maxDither;
-		case "Secondary":
-			return secondaryDither;
-		case "Tertiary":
-			return tertiaryDither;
-		case "Quaternary":
-			return quaternaryDither;
+			case "Primary":
+				return maxDither;
+			case "Secondary":
+				return secondaryDither;
+			case "Tertiary":
+				return tertiaryDither;
+			case "Quaternary":
+				return quaternaryDither;
 		}
-		return -1; //error
+		return -1; // error
 
 	}
-	
+
 	protected int returnTotalDitherLength() {
 		return totalDitherLength;
 	}
 
+	protected void changeRatio(int ratio) {
+		this.ratio = ratio;
+	}
+
+	protected int returnRatio() {
+		return ratio;
+	}
+
 }
-
-

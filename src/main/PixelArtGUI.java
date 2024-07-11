@@ -20,7 +20,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
-import java.lang.Math;
 import java.util.ArrayList;
 import java.util.HashMap;
 import javax.swing.JFrame;
@@ -48,6 +47,9 @@ public class PixelArtGUI extends JFrame {
 	private final JButton removeLayerButton = new JButton("-");
 	private final JButton addDitherLength = new JButton("+");
 	private final JButton removeDitherLength = new JButton("-");
+	private final JButton addRatioLength = new JButton("+");
+	private final JButton removeRatioLength = new JButton("-");
+
 	private final JComboBox<Integer> layerColour = new JComboBox<Integer>(new Integer[] { 1 });
 	private final JComboBox<String> presets = new JComboBox<String>();
 	private final JComboBox<String> ditherDropdown = new JComboBox<String>(
@@ -57,9 +59,11 @@ public class PixelArtGUI extends JFrame {
 
 	private final JLabel presetsTitle = new JLabel("Presets");
 	private final JLabel layerColourTitle = new JLabel("Layer Colour");
-	private final JLabel lengthTitle = new JLabel("Length");
-	private final JLabel heightTitle = new JLabel("Height");
+	private final JLabel lengthTitle = new JLabel("Number of Pixels for Length");
+	private final JLabel heightTitle = new JLabel("Number of Pixels for Height");
 	private final JLabel ditherTitle = new JLabel("Dither Length");
+	private final JLabel ratioTitle = new JLabel("Ratio Length");
+	private final JLabel ratioValue = new JLabel("1");
 
 	private final JSlider lengthSlider = new JSlider(100, 2000);
 	private final JSlider heightSlider = new JSlider(100, 2000);
@@ -120,27 +124,27 @@ public class PixelArtGUI extends JFrame {
 		setVisible(true);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setResizable(false);
-//		addComponentListener(new ComponentAdapter() {
-//			public void componentResized(ComponentEvent e) {
-//				// Ensures that the minimum size is possible
-//				if (getBounds().getSize().height <= screenSize.height / 2) {
-//					setSize(getWidth(), screenSize.height / 2);
-//				}
-//				if (getBounds().getSize().width <= screenSize.width / 2) {
-//					setSize(screenSize.width / 2, getHeight());
-//				}
-//
-//				// Uniform scaling!!!!!!
-//				if (getBounds().getSize().width >= screenSize.width / 2) {
-//					setSize(getWidth(), (int) (getBounds().getSize().width / ratio));
-//				} else if (getBounds().getSize().height >= screenSize.height / 2) {
-//					setSize((int) (ratio * getBounds().getSize().height), getHeight());
-//				}
-//				size = getBounds().getSize();
-//
-//				repaint();
-//			}
-//		});
+		// addComponentListener(new ComponentAdapter() {
+		// public void componentResized(ComponentEvent e) {
+		// // Ensures that the minimum size is possible
+		// if (getBounds().getSize().height <= screenSize.height / 2) {
+		// setSize(getWidth(), screenSize.height / 2);
+		// }
+		// if (getBounds().getSize().width <= screenSize.width / 2) {
+		// setSize(screenSize.width / 2, getHeight());
+		// }
+		//
+		// // Uniform scaling!!!!!!
+		// if (getBounds().getSize().width >= screenSize.width / 2) {
+		// setSize(getWidth(), (int) (getBounds().getSize().width / ratio));
+		// } else if (getBounds().getSize().height >= screenSize.height / 2) {
+		// setSize((int) (ratio * getBounds().getSize().height), getHeight());
+		// }
+		// size = getBounds().getSize();
+		//
+		// repaint();
+		// }
+		// });
 		lengthField.setText(String.valueOf((lengthSlider.getMaximum() + lengthSlider.getMinimum()) / 2));
 		heightField.setText(String.valueOf((heightSlider.getMaximum() + heightSlider.getMinimum()) / 2));
 		repaint();
@@ -251,6 +255,22 @@ public class PixelArtGUI extends JFrame {
 			}
 		});
 
+		addRatioLength.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				pixelArtGenerator.changeRatio(pixelArtGenerator.returnRatio() + 1);
+				ratioValue.setText(Integer.toString(pixelArtGenerator.returnRatio()));
+				repaint();
+			}
+		});
+
+		removeRatioLength.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				pixelArtGenerator.changeRatio(pixelArtGenerator.returnRatio() - 1);
+				ratioValue.setText(Integer.toString(pixelArtGenerator.returnRatio()));
+				repaint();
+			}
+		});
+
 		/**
 		 * 
 		 */
@@ -310,7 +330,7 @@ public class PixelArtGUI extends JFrame {
 	public void paint(Graphics g) {
 		super.paint(g);
 		final int border = (int) (size.width / 32.0);
-		final int quarter = size.width / 4;
+		// final int quarter = size.width / 4;
 		final int quarterBoxTop = (int) (size.width / 24.0 * 5);
 		final int quarterBoxTopSmall = (int) (size.width / 64.0 * 5);
 
@@ -562,7 +582,7 @@ public class PixelArtGUI extends JFrame {
 		ditherPanel.add(ditherTitle);
 		ditherPanel.add(ditherDropdown);
 
-		ditherDropdown.setBounds(0, ditherPanel.getHeight() / 4, ditherPanel.getWidth(), ditherPanel.getHeight() / 8);
+		ditherDropdown.setBounds(0, ditherPanel.getHeight() / 4, ditherPanel.getWidth(), ditherPanel.getHeight() / 4);
 		ditherDropdown.doLayout();
 		ditherDropdown.setVisible(true);
 
@@ -586,7 +606,7 @@ public class PixelArtGUI extends JFrame {
 					if (ke.getKeyChar() >= '0' && ke.getKeyChar() <= '9') {
 						int i = ke.getKeyChar() - '0';
 						int q = pixelArtGenerator.returnTotalDitherLength() + i;
-						
+
 						if (q <= pixelArtGenerator.getHeight()) {
 							ditherLength.setEditable(true);
 						} else {
@@ -602,7 +622,7 @@ public class PixelArtGUI extends JFrame {
 						int i = Integer.parseInt(ditherLength.getText() + ke.getKeyChar());
 						int q = pixelArtGenerator.returnTotalDitherLength() - Integer.parseInt(ditherLength.getText())
 								+ i;
-						
+
 						if (q <= pixelArtGenerator.getHeight()) {
 							ditherLength.setEditable(true);
 						} else {
@@ -638,14 +658,39 @@ public class PixelArtGUI extends JFrame {
 		ditherPanel.add(ditherLength);
 		add(ditherPanel);
 
-		ratioPanel.setBounds((int) Math.round(size.getWidth() / 2 + border / 2.0),
+		ratioPanel.setBounds(border / 2 * 3 + (int) Math.round(size.getWidth() / 4 - border / 4.0 * 3),
 				(int) (topHeight + 5.0 / 2 * border + size.height / 4),
-				(int) Math.round(size.getWidth() / 2 - border / 4.0 * 3),
+				(int) Math.round(size.getWidth() / 4 - border / 4.0 * 3),
 				size.height - border - (int) (topHeight + 7.0 / 2 * border + size.height / 4));
+
 		ratioPanel.setBorder(BorderFactory.createLineBorder(Color.black));
 		ratioPanel.setLayout(null);
 
-		//add(ratioPanel);
+		ratioTitle.setBounds(0, 0, ratioPanel.getWidth(), ratioPanel.getHeight() / 4);
+		ratioTitle.setFont(calibriSubTitle);
+		ratioTitle.setHorizontalAlignment(SwingConstants.CENTER);
+		ratioTitle.setVerticalAlignment(SwingConstants.CENTER);
+
+		ratioValue.setBounds(0, ratioPanel.getHeight() / 4, ratioPanel.getWidth(), ratioPanel.getHeight() / 4);
+		ratioValue.setFont(calibriSubTitle);
+		ratioValue.setHorizontalAlignment(SwingConstants.CENTER);
+		ratioValue.setVerticalAlignment(SwingConstants.CENTER);
+
+		removeRatioLength.setBounds(0, ratioPanel.getHeight() / 2, ratioPanel.getWidth() / 2,
+				ratioPanel.getHeight() / 3);
+
+		removeRatioLength
+				.setEnabled(pixelArtGenerator.returnRatio() > 0);
+
+		addRatioLength.setBounds(ratioPanel.getWidth() / 2, ratioPanel.getHeight() / 2,
+				ratioPanel.getWidth() / 2, ratioPanel.getHeight() / 3);
+
+		ratioPanel.add(ratioTitle);
+		ratioPanel.add(ratioValue);
+		ratioPanel.add(removeRatioLength);
+		ratioPanel.add(addRatioLength);
+
+		add(ratioPanel);
 	}
 
 }

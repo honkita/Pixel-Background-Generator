@@ -3,9 +3,10 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/Users/elitelu/Documents/Pixel-Background-Generator/src/pixel/background/generator/PixelBackgroundGenerator.java</file>
-            <file>file:/Users/elitelu/Documents/Pixel-Background-Generator/src/pixel/background/generator/jsonReader.java</file>
-            <file>file:/Users/elitelu/Documents/Pixel-Background-Generator/src/pixel/background/generator/PixelArtGUI.java</file>
+            <file>file:/Users/elitelu/Documents/Pixel-Background-Generator/src/main/PixelArtGUI.java</file>
+            <file>file:/Users/elitelu/Documents/Pixel-Background-Generator/src/main/jsonReader.java</file>
+            <file>file:/Users/elitelu/Documents/Pixel-Background-Generator/src/main/PixelBackgroundGenerator.java</file>
+            <file>file:/Users/elitelu/Documents/Pixel-Background-Generator/src/main/PixelArtGenerator.java</file>
         </group>
     </open-files>
 </project-private>
