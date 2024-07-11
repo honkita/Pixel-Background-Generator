@@ -49,6 +49,7 @@ public class PixelArtGUI extends JFrame {
 	private final JButton removeDitherLength = new JButton("-");
 	private final JButton addRatioLength = new JButton("+");
 	private final JButton removeRatioLength = new JButton("-");
+	private final JButton changeNameButton = new JButton("Confirm");
 
 	private final JComboBox<Integer> layerColour = new JComboBox<Integer>(new Integer[] { 1 });
 	private final JComboBox<String> presets = new JComboBox<String>();
@@ -64,6 +65,8 @@ public class PixelArtGUI extends JFrame {
 	private final JLabel ditherTitle = new JLabel("Dither Length");
 	private final JLabel ratioTitle = new JLabel("Ratio Length");
 	private final JLabel ratioValue = new JLabel("1");
+	private final JLabel nameTitle = new JLabel("Name of Image");
+	private final JLabel namePNG = new JLabel(".png");
 
 	private final JSlider lengthSlider = new JSlider(100, 2000);
 	private final JSlider heightSlider = new JSlider(100, 2000);
@@ -71,6 +74,7 @@ public class PixelArtGUI extends JFrame {
 	private final JTextField lengthField = new JTextField();
 	private final JTextField heightField = new JTextField();
 	private final JTextField ditherLength = new JTextField();
+	private final JTextField newName = new JTextField();
 
 	private final JPanel buttonPanel = new JPanel();
 	private final JPanel presetPanel = new JPanel();
@@ -82,6 +86,7 @@ public class PixelArtGUI extends JFrame {
 	private final JPanel heightPanel = new JPanel();
 	private final JPanel ditherPanel = new JPanel();
 	private final JPanel ratioPanel = new JPanel();
+	private final JPanel namePanel = new JPanel();
 
 	private final ArrayList<JPanel> presetColours = new ArrayList<JPanel>();
 	private final ArrayList<JPanel> gradiantColours = new ArrayList<JPanel>();
@@ -179,7 +184,6 @@ public class PixelArtGUI extends JFrame {
 	 * Code for all the buttons
 	 */
 	private void buttonActions() {
-		// TODO Auto-generated method stub
 		generateButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				pixelArtGenerator.generate();
@@ -320,6 +324,13 @@ public class PixelArtGUI extends JFrame {
 				int i = (int) (((JSlider) ce.getSource()).getValue());
 				heightField.setText(String.valueOf(i));
 				pixelArtGenerator.setHeight(i);
+			}
+		});
+
+		changeNameButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				pixelArtGenerator.changeName(newName.getText());
+				repaint();
 			}
 		});
 	}
@@ -691,6 +702,59 @@ public class PixelArtGUI extends JFrame {
 		ratioPanel.add(addRatioLength);
 
 		add(ratioPanel);
+
+		namePanel.setBounds(border * 2 + (int) Math.round(size.getWidth() / 4 - border / 4.0 * 3) * 2,
+				(int) (topHeight + 5.0 / 2 * border + size.height / 4),
+				(int) Math.round(size.getWidth() / 4 - border / 4.0 * 3) * 2,
+				size.height - border - (int) (topHeight + 7.0 / 2 * border + size.height / 4));
+
+		namePanel.setBorder(BorderFactory.createLineBorder(Color.black));
+		namePanel.setLayout(null);
+
+		nameTitle.setBounds(0, 0, namePanel.getWidth(), namePanel.getHeight() / 4);
+		nameTitle.setFont(calibriSubTitle);
+		nameTitle.setHorizontalAlignment(SwingConstants.CENTER);
+		nameTitle.setVerticalAlignment(SwingConstants.CENTER);
+
+		newName.setBounds(0, namePanel.getHeight() / 4, namePanel.getWidth() / 8 * 7,
+				namePanel.getHeight() / 4);
+		newName.setText(pixelArtGenerator.returnName());
+
+		namePNG.setBounds(namePanel.getWidth() / 8 * 7, namePanel.getHeight() / 4, namePanel.getWidth() / 8,
+				namePanel.getHeight() / 4);
+		namePNG.setFont(calibriSubTitle);
+		namePNG.setHorizontalAlignment(SwingConstants.CENTER);
+		namePNG.setVerticalAlignment(SwingConstants.CENTER);
+
+		changeNameButton.setBounds(0, namePanel.getHeight() / 2, namePanel.getWidth(),
+				namePanel.getHeight() / 3);
+
+		newName.addKeyListener(new KeyAdapter() {
+			public void keyPressed(KeyEvent ke) {
+				if (ke.getKeyChar() != KeyEvent.VK_SPACE) {
+					newName.setEditable(true);
+				} else {
+					newName.setEditable(false);
+				}
+
+			}
+
+			public void keyReleased(KeyEvent ke) {
+				changeNameButton
+						.setEnabled(!pixelArtGenerator.returnName().equals(newName.getText()));
+			}
+		});
+
+		changeNameButton
+				.setEnabled(!pixelArtGenerator.returnName().equals(newName.getText()));
+
+		namePanel.add(nameTitle);
+		namePanel.add(newName);
+		namePanel.add(namePNG);
+		namePanel.add(changeNameButton);
+
+		add(namePanel);
+
 	}
 
 }

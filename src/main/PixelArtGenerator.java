@@ -59,19 +59,12 @@ public class PixelArtGenerator {
 		for (int x = 0; x < convw; x++) {
 			for (int y = 0; y < convh; y++) {
 				double bb = (double) (convh) / colors.size();
-				double pp = y / bb;
-				// System.out.println("c" + Math.ceil(pp));
-				// System.out.println("f" + Math.floor(pp));
-				// System.out.println("o" + Math.round(pp));
-				// System.out.println((int)pp);
-				// System.out.println(Math.round(pp));
 				int coordinate = (int) ((y / bb));
 				int a = coordinate < numberOfColors() ? coordinate
 						: numberOfColors() - 1;
 				int b = coordinate - 1 < 0 ? 0 : coordinate - 1;
 				int c = coordinate + 1 > colors.size() - 1 ? colors.size() - 1
 						: coordinate + 1;
-				// System.out.println(a + " " + b + " " + c);
 				g2d.setColor(setColor(x, y, convh / colors.size() * (a + 1), convh / colors.size() * a, colors.get(a),
 						colors.get(b), colors.get(c)));
 
@@ -213,6 +206,14 @@ public class PixelArtGenerator {
 
 	protected int returnRatio() {
 		return ratio;
+	}
+
+	protected void changeName(String fileName) {
+		this.fileName = fileName;
+	}
+
+	protected String returnName() {
+		return fileName;
 	}
 
 }
