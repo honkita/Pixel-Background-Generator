@@ -68,8 +68,10 @@ public class PixelArtGUI extends JFrame {
 	private final JLabel nameTitle = new JLabel("Name of Image");
 	private final JLabel namePNG = new JLabel(".png");
 
-	private final JSlider lengthSlider = new JSlider(100, 2000);
-	private final JSlider heightSlider = new JSlider(100, 2000);
+	private final int minVal = 100;
+	private final int maxVal = 3000;
+	private final JSlider lengthSlider = new JSlider(minVal, maxVal);
+	private final JSlider heightSlider = new JSlider(minVal, maxVal);
 
 	private final JTextField lengthField = new JTextField();
 	private final JTextField heightField = new JTextField();
@@ -477,41 +479,7 @@ public class PixelArtGUI extends JFrame {
 		lengthField.setBounds(lengthPanel.getWidth() - 4 * border, lengthPanel.getHeight() / 8 * 3, 3 * border,
 				lengthPanel.getHeight() / 8 * 5);
 
-		lengthField.addKeyListener(new KeyAdapter() {
-			public void keyPressed(KeyEvent ke) {
-				String value = lengthField.getText();
-				int l = value.length();
-				if (l == 0) {
-					if (ke.getKeyChar() >= '1' && ke.getKeyChar() <= '9') {
-						lengthField.setEditable(true);
-					} else {
-						lengthField.setEditable(false);
-					}
-				} else {
-					char i = value.toCharArray()[0];
-					if (ke.getKeyChar() >= '0' && ke.getKeyChar() <= '9' && (i - '0') < 2 && l < 4
-							|| ke.getKeyChar() == '0' && (i - '0') == 2 && l < 4
-							|| ke.getKeyChar() >= '0' && ke.getKeyChar() <= '9' && (i - '0') > 2 && l < 3
-							|| ke.getKeyCode() == KeyEvent.VK_BACK_SPACE && l <= 4) {
-						lengthField.setEditable(true);
-					} else {
-						lengthField.setEditable(false);
-					}
-				}
-			}
-
-			public void keyReleased(KeyEvent ke) {
-				try {
-					int convert = Integer.parseInt(lengthField.getText());
-					if (convert >= 100) {
-						lengthSlider.setValue(convert);
-
-					}
-				} catch (NumberFormatException nfe) {
-
-				}
-			}
-		});
+		dimensionSliders(lengthField, lengthSlider);
 
 		lengthPanel.add(lengthTitle);
 		lengthPanel.add(lengthSlider);
@@ -537,42 +505,7 @@ public class PixelArtGUI extends JFrame {
 		heightField.setBounds(heightPanel.getWidth() - 4 * border, heightPanel.getHeight() / 8 * 3, 3 * border,
 				heightPanel.getHeight() / 8 * 5);
 
-		heightField.addKeyListener(new KeyAdapter() {
-			public void keyPressed(KeyEvent ke) {
-				String value = heightField.getText();
-				int l = value.length();
-				if (l == 0) {
-					if (ke.getKeyChar() >= '1' && ke.getKeyChar() <= '9') {
-						heightField.setEditable(true);
-					} else {
-						heightField.setEditable(false);
-					}
-				} else {
-					char i = value.toCharArray()[0];
-
-					if (ke.getKeyChar() >= '0' && ke.getKeyChar() <= '9' && (i - '0') < 2 && l < 4
-							|| ke.getKeyChar() == '0' && (i - '0') == 2 && l < 4
-							|| ke.getKeyChar() >= '0' && ke.getKeyChar() <= '9' && (i - '0') > 2 && l < 3
-							|| ke.getKeyCode() == KeyEvent.VK_BACK_SPACE && l <= 4) {
-						heightField.setEditable(true);
-					} else {
-						heightField.setEditable(false);
-					}
-				}
-			}
-
-			public void keyReleased(KeyEvent ke) {
-				try {
-					int convert = Integer.parseInt(heightField.getText());
-					if (convert >= 100) {
-						heightSlider.setValue(convert);
-
-					}
-				} catch (NumberFormatException nfe) {
-
-				}
-			}
-		});
+		dimensionSliders(heightField, heightSlider);
 
 		heightPanel.add(heightTitle);
 		heightPanel.add(heightSlider);
@@ -755,6 +688,65 @@ public class PixelArtGUI extends JFrame {
 
 		add(namePanel);
 
+	}
+
+	/**
+	 * Adds the actions for the sliders for length and width
+	 * 
+	 * @param textField Corresponding JTextField
+	 * @param slider    Corresponding JSlider
+	 */
+	private void dimensionSliders(JTextField textField, JSlider slider) {
+		textField.addKeyListener(new KeyAdapter() {
+			public void keyPressed(KeyEvent ke) {
+				String value = textField.getText();
+				int l = value.length();
+				if (l == 0 && ke.getKeyChar() >= '1' && ke.getKeyChar() <= '9' ||
+						l > 0 && l <= 4 && ke.getKeyChar() >= '0' && ke.getKeyChar() <= '9'
+								&& inputChecker(value, ke.getKeyChar(), minVal, maxVal)
+						||
+						ke.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
+					textField.setEditable(true);
+				} else {
+					textField.setEditable(false);
+				}
+			}
+
+			public void keyReleased(KeyEvent ke) {
+				try {
+					int convert = Integer.parseInt(textField.getText());
+					if (convert >= 100) {
+						slider.setValue(convert);
+
+					}
+				} catch (NumberFormatException nfe) {
+
+				}
+			}
+		});
+	}
+
+	/**
+	 * Checks if the input is valid
+	 * If the string with the new character is of max langth, it must be between the
+	 * min and max inclusive
+	 * If the string with the new character is less than the max length, must be a
+	 * number
+	 * 
+	 * @param s       Original string
+	 * @param newChar New entered character
+	 * @param min     Min value
+	 * @param max     Max value
+	 * @return
+	 */
+	private boolean inputChecker(String s, char newChar, int min, int max) {
+		String combined = s + newChar;
+		int length = combined.length();
+		int c = Integer.valueOf(combined);
+		if (c <= max && (length == 4 && c >= min || length < 4)) {
+			return true;
+		}
+		return false;
 	}
 
 }
