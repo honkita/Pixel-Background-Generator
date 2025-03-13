@@ -126,6 +126,10 @@ public class PixelArtGenerator {
 		this.length = length;
 	}
 
+	protected int getLength() {
+		return length;
+	}
+
 	protected void setHeight(int height) {
 		this.height = height;
 	}

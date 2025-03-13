@@ -188,6 +188,11 @@ public class PixelArtGUI extends JFrame {
 	private void buttonActions() {
 		generateButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				// check height and width for min value
+				if (pixelArtGenerator.getHeight() < minVal)
+					pixelArtGenerator.setHeight(minVal);
+				if (pixelArtGenerator.getLength() < minVal)
+					pixelArtGenerator.setLength(minVal);
 				pixelArtGenerator.generate();
 			}
 		});
