@@ -4,20 +4,14 @@
  */
 package main;
 
-import java.awt.Color;
-import java.awt.Desktop;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.GridLayout;
-import java.awt.Rectangle;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -28,6 +22,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
@@ -96,6 +91,8 @@ public class PixelArtGUI extends JFrame {
 	private final jsonReader s;
 	// private final painter p;
 
+	private final Taskbar taskbar = Taskbar.getTaskbar();
+
 	Dimension size;
 	Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 	Rectangle r;
@@ -106,7 +103,7 @@ public class PixelArtGUI extends JFrame {
 	private HashMap<String, Color[]> colors;
 
 	PixelArtGUI() {
-		setTitle("Elite's Pixel Gradient Maker");
+		setTitle("Pixel Gradient Maker");
 		for (int i = 0; i < 5; i++) {
 			presetColours.add(new JPanel());
 
@@ -131,27 +128,19 @@ public class PixelArtGUI extends JFrame {
 		setVisible(true);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setResizable(false);
-		// addComponentListener(new ComponentAdapter() {
-		// public void componentResized(ComponentEvent e) {
-		// // Ensures that the minimum size is possible
-		// if (getBounds().getSize().height <= screenSize.height / 2) {
-		// setSize(getWidth(), screenSize.height / 2);
-		// }
-		// if (getBounds().getSize().width <= screenSize.width / 2) {
-		// setSize(screenSize.width / 2, getHeight());
-		// }
-		//
-		// // Uniform scaling!!!!!!
-		// if (getBounds().getSize().width >= screenSize.width / 2) {
-		// setSize(getWidth(), (int) (getBounds().getSize().width / ratio));
-		// } else if (getBounds().getSize().height >= screenSize.height / 2) {
-		// setSize((int) (ratio * getBounds().getSize().height), getHeight());
-		// }
-		// size = getBounds().getSize();
-		//
-		// repaint();
-		// }
-		// });
+		BufferedImage image;
+
+		try {
+			image = ImageIO.read(new File("./Assets/icon.png"));
+			taskbar.setIconImage(image);
+			setIconImage(image);
+		} catch (final IOException e) {
+			System.out.println("IO Error");
+		} catch (final UnsupportedOperationException e) {
+			System.out.println("The os does not support: 'taskbar.setIconImage'");
+		} catch (final SecurityException e) {
+			System.out.println("There was a security exception for: 'taskbar.setIconImage'");
+		}
 		lengthField.setText(String.valueOf((lengthSlider.getMaximum() + lengthSlider.getMinimum()) / 2));
 		heightField.setText(String.valueOf((heightSlider.getMaximum() + heightSlider.getMinimum()) / 2));
 		repaint();
