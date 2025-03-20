@@ -4,12 +4,9 @@
  */
 package main;
 
-import java.awt.Color;
-import java.awt.Desktop;
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import javax.imageio.ImageIO;
 
