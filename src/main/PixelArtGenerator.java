@@ -15,7 +15,7 @@ public class PixelArtGenerator {
 
 	ArrayList<Color> colors = new ArrayList<Color>();
 
-	private int ratio = 1; // side length of a single "pixel" for image
+	private int ratio = 4; // side length of a single "pixel" for image
 	private int maxDither = 10;
 	private int secondaryDither = 8;
 	private int tertiaryDither = 8;
